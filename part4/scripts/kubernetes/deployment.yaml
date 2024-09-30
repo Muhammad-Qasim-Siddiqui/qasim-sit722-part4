@@ -1,0 +1,77 @@
+# Your Solution
+
+# Deployment for book-catalog
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: book-catalog
+  template:
+    metadata:
+      labels:
+        app: book-catalog
+    spec:
+      containers:
+      - name: book-catalog
+        image: sit722acrpart4.azurecr.io/book_catalog_service:latest  # Updated image path
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://sit722postgresdb_user:3Nak5cgW51lA9rSHcJbD7eOppHPDcteJ@dpg-crt1jktds78s73eae9dg-a.oregon-postgres.render.com:5432/sit722postgresdb?sslmode=require"  # Updated database URL with SSL
+---
+# Service for book-catalog
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-catalog-service
+spec:
+  selector:
+    app: book-catalog
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: LoadBalancer
+---
+# Deployment for inventory-management
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory-management
+  template:
+    metadata:
+      labels:
+        app: inventory-management
+    spec:
+      containers:
+      - name: inventory-management
+        image: sit722acrpart4.azurecr.io/inventory_management_service:latest  # Updated image path
+        ports:
+        - containerPort: 8001
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://sit722postgresdb_user:3Nak5cgW51lA9rSHcJbD7eOppHPDcteJ@dpg-crt1jktds78s73eae9dg-a.oregon-postgres.render.com:5432/sit722postgresdb?sslmode=require"  # Updated database URL with SSL
+---
+# Service for inventory-management
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-management-service
+spec:
+  selector:
+    app: inventory-management
+  ports:
+    - protocol: TCP
+      port: 8001
+      targetPort: 8001
+  type: LoadBalancer

@@ -1,0 +1,50 @@
+# Your Solution
+
+version: "3.8"
+services:
+  book_catalog:
+    build: 
+      context: ./book_catalog
+    container_name: book_catalog_service
+    environment:
+      - DATABASE_URL=postgresql://sit722postgresdb_user:3Nak5cgW51lA9rSHcJbD7eOppHPDcteJ@dpg-crt1jktds78s73eae9dg-a.oregon-postgres.render.com:5432/sit722postgresdb?sslmode=require
+    ports:
+      - "8000:8000"  # Expose port 8000 for book_catalog service
+    depends_on:
+      - postgres
+    networks:
+      - microservices_network
+
+  inventory_management:
+    build: 
+      context: ./inventory_management
+    container_name: inventory_management_service
+    environment:
+      - DATABASE_URL=postgresql://sit722postgresdb_user:3Nak5cgW51lA9rSHcJbD7eOppHPDcteJ@dpg-crt1jktds78s73eae9dg-a.oregon-postgres.render.com:5432/sit722postgresdb?sslmode=require
+    ports:
+      - "8001:8001"  # Expose port 8001 for inventory_management service
+    depends_on:
+      - postgres
+    networks:
+      - microservices_network
+
+  postgres:
+    image: postgres:13
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: sit722postgresdb_user
+      POSTGRES_PASSWORD: 3Nak5cgW51lA9rSHcJbD7eOppHPDcteJ
+      POSTGRES_DB: sit722postgresdb
+    ports:
+      - "5432:5432"  # Expose the database port for connections
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Persist PostgreSQL data
+    networks:
+      - microservices_network
+
+networks:
+  microservices_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
